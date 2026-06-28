@@ -11,7 +11,7 @@ public class DBConnectionManager {
           + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
     private static final String USER = "root";
-    private static final String PASS = "Radhika11@2006";
+    private static final String PASS = "080905";
 
     static {
     try {
