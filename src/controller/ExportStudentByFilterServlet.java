@@ -1,17 +1,15 @@
 package controller;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import jakarta.servlet.*;
 
 import service.StudentService;
 
-import java.io.IOException;
-import java.io.File;
+import java.io.*;
 
 @WebServlet("/export-students")
-public class ExportStudentByFilterServlet
-        extends HttpServlet {
+public class ExportStudentByFilterServlet extends HttpServlet {
 
     private StudentService service =
             new StudentService();
@@ -27,41 +25,55 @@ public class ExportStudentByFilterServlet
 
         int semester =
                 Integer.parseInt(
-                        request.getParameter("semester")
+                        request.getParameter("semester"));
+
+        // Temporary file
+
+        File tempFile =
+                File.createTempFile(
+                        department + "_SEM_" + semester,
+                        ".csv"
                 );
-
-        String exportFolder =
-                getServletContext()
-                        .getRealPath("/exports");
-
-        File folder =
-                new File(exportFolder);
-
-        if(!folder.exists()) {
-            folder.mkdirs();
-        }
-
-        String filePath =
-                exportFolder +
-                File.separator +
-                department +
-                "_SEM_" +
-                semester +
-                ".csv";
 
         service.exportStudentsByDeptAndSemester(
                 department,
                 semester,
-                filePath
+                tempFile.getAbsolutePath()
         );
 
-        response.setContentType(
-                "text/plain"
+        response.setContentType("text/csv");
+
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=\"" +
+                        department +
+                        "_SEM_" +
+                        semester +
+                        ".csv\""
         );
 
-        response.getWriter().println(
-                "Export completed:\n\n" +
-                filePath
-        );
+        FileInputStream fis =
+                new FileInputStream(tempFile);
+
+        OutputStream os =
+                response.getOutputStream();
+
+        byte[] buffer =
+                new byte[4096];
+
+        int bytesRead;
+
+        while((bytesRead=fis.read(buffer))!=-1){
+
+            os.write(buffer,0,bytesRead);
+
+        }
+
+        fis.close();
+
+        os.flush();
+
+        tempFile.delete();
+
     }
 }
