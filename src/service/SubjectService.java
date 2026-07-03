@@ -1,15 +1,15 @@
 package service;
 
-import dao.DBConnectionManager;
-import dao.SubjectDao;
-import model.Subject;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+
+import dao.DBConnectionManager;
+import dao.SubjectDao;
+import model.Subject;
 
 public class SubjectService {
 
@@ -135,6 +135,23 @@ public class SubjectService {
     return subject;
 }
 
+public List<Subject> getAllSubjects(){
+
+   return subjectDao.getAllSubjects();
+
+}
+
+public void updateSubject(Subject s){
+
+   subjectDao.updateSubject(s);
+
+}
+
+public void deleteSubject(int id){
+
+   subjectDao.deleteSubject(id);
+
+}
 
 }
 

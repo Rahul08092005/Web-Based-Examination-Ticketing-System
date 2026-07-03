@@ -1,9 +1,13 @@
 package dao;
 
-import model.Subject;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Subject;
 
 public class SubjectDao {
 
@@ -237,4 +241,34 @@ public int getSubjectCount() {
 
     return 0;
 }
+public void updateSubject(Subject s) {
+
+   String sql = """
+       UPDATE subjects
+       SET subject_code=?,
+           subject_name=?,
+           semester=?,
+           category_code=?
+       WHERE id=?
+   """;
+
+   try(Connection conn =
+           DBConnectionManager.getConnection();
+       PreparedStatement ps =
+           conn.prepareStatement(sql)){
+
+       ps.setString(1,s.getCode());
+       ps.setString(2,s.getName());
+       ps.setInt(3,s.getSemester());
+       ps.setString(4,s.getCategoryCode());
+       ps.setInt(5,s.getId());
+
+       ps.executeUpdate();
+
+   }catch(Exception e){
+       System.out.println(e.getMessage());
+   }
+
+}
+
 }
