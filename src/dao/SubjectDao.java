@@ -270,5 +270,24 @@ public void updateSubject(Subject s) {
    }
 
 }
+public void deleteSubject(int id){
+
+   String sql =
+           "DELETE FROM subjects WHERE id=?";
+
+   try(Connection conn=
+           DBConnectionManager.getConnection();
+       PreparedStatement ps=
+           conn.prepareStatement(sql)){
+
+       ps.setInt(1,id);
+
+       ps.executeUpdate();
+
+   }catch(Exception e){
+       System.out.println(e.getMessage());
+   }
+
+}
 
 }
