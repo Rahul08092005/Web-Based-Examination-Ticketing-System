@@ -24,6 +24,7 @@ public class Subject {
     public int getSemester() { return semester; }
     public String getCategoryCode() { return categoryCode; }
 
+    public void setCode(String code) { this.code = code; }
     public void setName(String name) { this.name = name; }
     public void setSemester(int semester) { this.semester = semester; }
     public void setCategoryCode(String categoryCode) { this.categoryCode = categoryCode; }
