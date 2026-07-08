@@ -1,15 +1,15 @@
 package service;
 
+import dao.DBConnectionManager;
+import dao.SubjectDao;
+import model.Subject;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
-
-import dao.DBConnectionManager;
-import dao.SubjectDao;
-import model.Subject;
 
 public class SubjectService {
 
@@ -80,6 +80,8 @@ public class SubjectService {
 
             while ((line = br.readLine()) != null) {
 
+                if (line.isBlank()) continue;
+
                 String[] data = line.split(",");
 
                 String code = data[0].trim();
@@ -105,7 +107,37 @@ public class SubjectService {
             System.out.println("❌ Subject CSV import error: " + e.getMessage());
         }
     }
-    
+
+    // ---------------- CSV EXPORT ----------------
+    // Builds a CSV string (header + one row per subject) that the servlet
+    // streams back to the browser as a file download.
+    public String exportSubjectsToCSV() {
+
+        List<Subject> subjects = subjectDao.getAllSubjects();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("subject_code,subject_name,semester,category_code\n");
+
+        for (Subject s : subjects) {
+            sb.append(csvEscape(s.getCode())).append(",")
+              .append(csvEscape(s.getName())).append(",")
+              .append(s.getSemester()).append(",")
+              .append(csvEscape(s.getCategoryCode())).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    // Wraps a field in quotes if it contains a comma, quote, or newline,
+    // and doubles up any internal quotes, per standard CSV escaping rules.
+    private String csvEscape(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
     public Subject getByCode(String subjectCode) {
 
     Subject subject = null;
@@ -137,21 +169,32 @@ public class SubjectService {
 
 public List<Subject> getAllSubjects(){
 
-   return subjectDao.getAllSubjects();
+    return subjectDao.getAllSubjects();
 
 }
 
 public void updateSubject(Subject s){
 
-   subjectDao.updateSubject(s);
+    subjectDao.updateSubject(s);
 
 }
 
 public void deleteSubject(int id){
 
-   subjectDao.deleteSubject(id);
+    subjectDao.deleteSubject(id);
+
+}
+
+public List<Subject> searchSubjects(String keyword){
+
+    // Guard against null/blank keyword so a bare GET to /search-subject
+    // (or a cleared search box) doesn't NPE inside the DAO's LIKE query.
+    if (keyword == null || keyword.isBlank()) {
+        return subjectDao.getAllSubjects();
+    }
+
+    return subjectDao.searchSubjects(keyword);
 
 }
 
 }
-
