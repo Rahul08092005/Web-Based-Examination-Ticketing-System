@@ -152,11 +152,29 @@
                             Department
                         </label>
 
-                        <input type="text"
-                               name="department"
-                               class="form-control"
-                               placeholder="CSE-DS"
-                               required>
+                        <select name="department"
+                                class="form-select"
+                                required>
+
+                            <option value="" selected disabled>
+                                Select Department
+                            </option>
+
+                            <option value="AI">AI - Artificial Intelligence and Machine Learning</option>
+                            <option value="ARCH">ARCH - Bachelor of Architecture</option>
+                            <option value="CV">CV - Civil Engineering</option>
+                            <option value="CSE">CSE - Computer Science and Engineering</option>
+                            <option value="CSD">CSD - Computer Science and Design</option>
+                            <option value="CSE-AI">CSE-AI - CSE (Artificial Intelligence)</option>
+                            <option value="CSE-CY">CSE-CY - CSE (Cyber Security)</option>
+                            <option value="CSE-DS">CSE-DS - CSE &amp; Engineering (Data Science)</option>
+                            <option value="CSE-IOT">CSE-IOT - CSE (IoT &amp; Cyber Security incl. Blockchain)</option>
+                            <option value="EEE">EEE - Electrical &amp; Electronics Engineering</option>
+                            <option value="ECE">ECE - Electronics and Communication Engineering</option>
+                            <option value="ISE">ISE - Information Science and Engineering</option>
+                            <option value="ME">ME - Mechanical Engineering</option>
+
+                        </select>
 
                     </div>
 
