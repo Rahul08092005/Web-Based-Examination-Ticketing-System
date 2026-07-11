@@ -1,6 +1,10 @@
 package dao;
 
+import model.AttendanceRecord;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AttendanceDao {
@@ -181,5 +185,84 @@ public void approveCondonation(
     }
 }
 
+// =====================================================
+// NEW: LIST ALL ATTENDANCE (joined with student + subject)
+// Used to power the web attendance listing page.
+// =====================================================
+public List<AttendanceRecord> getAllAttendanceWithDetails() {
+
+    List<AttendanceRecord> list = new ArrayList<>();
+
+    String sql = """
+        SELECT
+            att.id AS att_id,
+            att.student_id,
+            att.subject_id,
+            st.full_name,
+            st.usn,
+            st.branch,
+            st.department,
+            st.semester AS student_semester,
+            sub.subject_code,
+            sub.subject_name,
+            sub.category_code,
+            att.theory_attendance_percent,
+            att.lab_attendance_percent,
+            att.attendance_percent,
+            att.condonation_approved
+        FROM attendance att
+        JOIN students st ON att.student_id = st.id
+        JOIN subjects sub ON att.subject_id = sub.id
+        ORDER BY st.usn ASC
+    """;
+
+    try (Connection conn = DBConnectionManager.getConnection();
+         Statement st = conn.createStatement();
+         ResultSet rs = st.executeQuery(sql)) {
+
+        while (rs.next()) {
+            list.add(new AttendanceRecord(
+                rs.getInt("att_id"),
+                rs.getInt("student_id"),
+                rs.getInt("subject_id"),
+                rs.getString("full_name"),
+                rs.getString("usn"),
+                rs.getString("branch"),
+                rs.getString("department"),
+                rs.getInt("student_semester"),
+                rs.getString("subject_code"),
+                rs.getString("subject_name"),
+                rs.getString("category_code"),
+                (Double) rs.getObject("theory_attendance_percent"),
+                (Double) rs.getObject("lab_attendance_percent"),
+                (Double) rs.getObject("attendance_percent"),
+                rs.getBoolean("condonation_approved")
+            ));
+        }
+
+    } catch (Exception e) {
+        System.out.println("Fetch attendance list error: " + e.getMessage());
+    }
+
+    return list;
+}
+
+// =====================================================
+// NEW: DELETE ATTENDANCE RECORD
+// =====================================================
+public void deleteAttendance(int id) {
+
+    String sql = "DELETE FROM attendance WHERE id=?";
+
+    try (Connection conn = DBConnectionManager.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, id);
+        ps.executeUpdate();
+
+    } catch (Exception e) {
+        System.out.println("Delete attendance error: " + e.getMessage());
+    }
+}
 
 }
