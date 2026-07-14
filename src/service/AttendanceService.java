@@ -1,14 +1,17 @@
 package service;
 
-import dao.AttendanceDao;
-import dao.StudentDao;
-import dao.SubjectDao;
-import model.Attendance;
-import model.Subject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.sql.ResultSet;
+import java.util.List;
+
+import dao.AttendanceDao;
+import dao.StudentDao;
+import dao.SubjectDao;
+import model.Attendance;
+import model.AttendanceRecord;
+import model.Subject;
 
 
 public class AttendanceService {
@@ -134,6 +137,21 @@ public void exportAttendanceBySubject(String subjectCode, String filePath) {
     } catch (Exception e) {
         System.out.println("❌ Attendance CSV export error: " + e.getMessage());
     }
+}
+
+// =====================================================
+// NEW: for the web listing page
+// =====================================================
+public List<AttendanceRecord> getAllAttendanceWithDetails() {
+    return attendanceDao.getAllAttendanceWithDetails();
+}
+
+public void deleteAttendance(int id) {
+    attendanceDao.deleteAttendance(id);
+}
+
+public void approveCondonation(int studentId, int subjectId, String reason) {
+    attendanceDao.approveCondonation(studentId, subjectId, reason);
 }
 
 }
